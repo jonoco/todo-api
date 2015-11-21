@@ -16,8 +16,18 @@ app.get('/', function( req, res ) {
 
 // GET /todos
 app.get('/todos', function( req, res ) {
+	var queryParams = req.query;
+	var filteredTodos = todos;
+
+	console.log(queryParams.done == 'false');
+
+	if (queryParams.hasOwnProperty('done')) {
+		if (queryParams.done === 'true') {filteredTodos = _.where(filteredTodos, { done: true }); }
+		else if (queryParams.done === 'false') {filteredTodos = _.where(filteredTodos, { done: false }); }
+	}
+
 	// convert to json & send
-	res.json(todos);
+	res.json(filteredTodos);
 })
 
 // GET /todos/:id
@@ -80,7 +90,9 @@ app.put('/todos/:id', function( req, res ) {
 		return res.status(400).send();
 	}
 
-	if (body.hasOwnProperty('description') && (_.isString(body.description) && body.description.trim().length >= 0)) {
+	if (body.hasOwnProperty('description') 
+		&& (_.isString(body.description) 
+		&& body.description.trim().length >= 0)) {
 		validAttributes.description = body.description;	
 	} else if (body.hasOwnProperty('description')) {
 		return res.status(400).json({"error": "Invalid description"});
