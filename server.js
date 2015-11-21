@@ -15,13 +15,13 @@ app.get('/', function( req, res ) {
 });
 
 // GET /todos
-app.get('/todos', function(req, res) {
+app.get('/todos', function( req, res ) {
 	// convert to json & send
 	res.json(todos);
 })
 
 // GET /todos/:id
-app.get('/todos/:id', function(req, res) {
+app.get('/todos/:id', function( req, res ) {
 	var id = parseInt(req.params.id, 10);
 	var matchedTodo = _.findWhere(todos, {id: id});
 	
@@ -49,6 +49,25 @@ app.post('/todos', function( req, res ) {
 	todos.push(newTodo);
 	res.json(newTodo);
 });
+
+// DELETE /todos/:id
+app.delete('/todos/:id', function( req, res ) {
+	var todoId = parseInt(req.params.id, 10);
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+
+	if (!matchedTodo) {
+		res.status(404).json({"error": "Could not find todo with that id"});
+	} else {
+		todos = _.without(todos, matchedTodo);
+		res.json(matchedTodo);
+	}
+});
+
+// PUT /todos/:id
+// app.put('/todos/:id', function( req, res ) {
+// 	var todoId = parseInt(req.params.id, 10);
+// 	var newDescription = 
+// });
 
 app.listen(PORT, function() {
 	console.log('Listening on ' + PORT);	
