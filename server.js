@@ -19,11 +19,16 @@ app.get('/todos', function( req, res ) {
 	var queryParams = req.query;
 	var filteredTodos = todos;
 
-	console.log(queryParams.done == 'false');
-
 	if (queryParams.hasOwnProperty('done')) {
-		if (queryParams.done === 'true') {filteredTodos = _.where(filteredTodos, { done: true }); }
-		else if (queryParams.done === 'false') {filteredTodos = _.where(filteredTodos, { done: false }); }
+		if (queryParams.done === 'true') { filteredTodos = _.where(filteredTodos, { done: true }); }
+		else if (queryParams.done === 'false') { filteredTodos = _.where(filteredTodos, { done: false }); }
+	}
+
+	// Search todo descriptions for query
+	if (queryParams.hasOwnProperty('q')) {
+		var filteredTodos = _.filter(todos, function(todo) {
+			return (todo.description.indexOf(queryParams.q) >= 0) ? todo : null;
+		});
 	}
 
 	// convert to json & send
