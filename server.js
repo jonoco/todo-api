@@ -26,7 +26,7 @@ app.get('/todos', function( req, res ) {
 
 	// Search todo descriptions for query
 	if (queryParams.hasOwnProperty('q')) {
-		var filteredTodos = _.filter(todos, function(todo) {
+		var filteredTodos = _.filter(filteredTodos, function(todo) {
 			return (todo.description.indexOf(queryParams.q) >= 0) ? todo : null;
 		});
 	}
