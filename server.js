@@ -17,23 +17,29 @@ app.get('/', function( req, res ) {
 
 // GET /todos
 app.get('/todos', function( req, res ) {
-	var queryParams = req.query;
-	var filteredTodos = todos;
+	var query = req.query;
+	var where = {};
 
-	if (queryParams.hasOwnProperty('done')) {
-		if (queryParams.done === 'true') { filteredTodos = _.where(filteredTodos, { done: true }); }
-		else if (queryParams.done === 'false') { filteredTodos = _.where(filteredTodos, { done: false }); }
+	if (query.hasOwnProperty('done')) {
+		if (query.done === 'true') { where.done = true; }
+		else if (query.done === 'false') { where.done = false; }
 	}
 
-	// Search todo descriptions for query
-	if (queryParams.hasOwnProperty('q')) {
-		var filteredTodos = _.filter(filteredTodos, function(todo) {
-			return (todo.description.indexOf(queryParams.q) >= 0) ? todo : null;
-		});
+	if (query.hasOwnProperty('q') && query.q.length > 0) { 
+		where.description = {
+		 $like: '%' + query.q + '%'
+		}
 	}
 
-	// convert to json & send
-	res.json(filteredTodos);
+	db.todo.findAll({
+		where: where
+	}).then(function(results) {
+		if (!!results) { res.json(results);	} 
+		else { res.status(404).send(); }
+	}).catch(function(e) {
+		res.status(500).json(e.toJSON());
+	});
+
 })
 
 // GET /todos/:id
