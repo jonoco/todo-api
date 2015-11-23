@@ -86,31 +86,29 @@ app.delete('/todos/:id', function( req, res ) {
 
 // PUT /todos/:id
 app.put('/todos/:id', function( req, res ) {
-	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {id: todoId});	
-	var body = _.pick(req.body, 'description', 'done');
-	var validAttributes = {};
+	var id = parseInt(req.params.id, 10);
+	var updatedTodo = {};
 
-	if (!matchedTodo) {
-		return res.status(404).json({"error": "Could not find todo with that id"});
+	if (req.body.hasOwnProperty('done')) {
+		updatedTodo.done = req.body.done;
 	}
 
-	if (body.hasOwnProperty('done') && body.done) {
-		validAttributes.done = body.done;
-	} else if (body.hasOwnProperty('done')) {
-		return res.status(400).send();
+	if (req.body.hasOwnProperty('description')) {
+		updatedTodo.description = req.body.description;
 	}
 
-	if (body.hasOwnProperty('description') 
-		&& (_.isString(body.description) 
-		&& body.description.trim().length >= 0)) {
-		validAttributes.description = body.description;	
-	} else if (body.hasOwnProperty('description')) {
-		return res.status(400).json({"error": "Invalid description"});
-	}
+	db.todo.findById(id).then(function(todo) {
+		if (!!todo) { 
+			todo.update(updatedTodo).then(function() {
+				res.json(todo.toJSON());
+			});
+		} else {
+			res.status(404).send();
+		}
+	}).catch(function(e) {
+		res.status(500).json(e);
+	});
 
-	_.extend(matchedTodo, body)
-	res.json(matchedTodo);
 });
 
 db.sequelize.sync().then(function() {
