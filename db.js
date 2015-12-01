@@ -18,6 +18,7 @@ if (env === 'production') {
 var db = {};
 
 db.todo = seq.import(__dirname + '/models/todo.js');
+db.user = seq.import(__dirname + '/models/user.js');
 db.sequelize = seq;
 db.Sequelize = Sequelize;
 
