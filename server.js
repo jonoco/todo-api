@@ -71,17 +71,31 @@ app.post('/todos', function( req, res ) {
 app.delete('/todos/:id', function( req, res ) {
 	var id = parseInt(req.params.id, 10);
 	
-	db.todo.findById(id).then(function(todo) {
-		if (!!todo) { 
-			todo.destroy().then(function() {
-				res.send();
-			});	
-		} else {
+	db.todo.destroy({
+		where: {
+			id: id
+		}
+	}).then(function(deletedRows) {
+		if (deletedRows < 1) {
 			res.status(404).send();
+		} else {
+			res.status(204).send();
 		}
 	}).catch(function(e) {
 		res.status(500).json(e);
-	});
+	})
+
+	// db.todo.findById(id).then(function(todo) {
+	// 	if (!!todo) { 
+	// 		todo.destroy().then(function() {
+	// 			res.send();
+	// 		});	
+	// 	} else {
+	// 		res.status(404).send();
+	// 	}
+	// }).catch(function(e) {
+	// 	res.status(500).json(e);
+	// });
 });
 
 // PUT /todos/:id
