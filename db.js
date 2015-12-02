@@ -22,4 +22,7 @@ db.user = seq.import(__dirname + '/models/user.js');
 db.sequelize = seq;
 db.Sequelize = Sequelize;
 
+db.todo.belongsTo(db.user);
+db.user.hasMany(db.todo);
+
 module.exports = db;
